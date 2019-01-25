@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.IntentSender;
 
 import io.reactivex.Observable;
 
@@ -41,20 +42,28 @@ public class AvoidOnResult {
         return (AvoidOnResultFragment) activity.getFragmentManager().findFragmentByTag(TAG);
     }
 
-    public Observable<ActivityResultInfo> startForResult(Intent intent) {
+    public Observable<ActivityResultInfo> startIntentSenderForResult(IntentSender intentSender,
+                                                                     Intent fillingIntent,
+                                                                     Integer flagsMask,
+                                                                     Integer flagsValues,
+                                                                     Integer extraFlags) {   //2
+        return mAvoidOnResultFragment.startIntentSenderForResult(intentSender, fillingIntent, flagsMask, flagsValues, extraFlags);
+    }
+
+    public Observable<ActivityResultInfo> startForResult(Intent intent) {   //2
         return mAvoidOnResultFragment.startForResult(intent);
     }
 
-    public Observable<ActivityResultInfo> startForResult(Class<?> clazz) {
+    public Observable<ActivityResultInfo> startForResult(Class<?> clazz) {  //1
         Intent intent = new Intent(mAvoidOnResultFragment.getActivity(), clazz);
         return startForResult(intent);
     }
 
-    public void startForResult(Intent intent, Callback callback) {
+    public void startForResult(Intent intent, Callback callback) { //2
         mAvoidOnResultFragment.startForResult(intent, callback);
     }
 
-    public void startForResult(Class<?> clazz, Callback callback) {
+    public void startForResult(Class<?> clazz, Callback callback) { //1
         Intent intent = new Intent(mAvoidOnResultFragment.getActivity(), clazz);
         startForResult(intent, callback);
     }

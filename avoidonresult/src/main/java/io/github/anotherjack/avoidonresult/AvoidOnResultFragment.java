@@ -2,6 +2,7 @@ package io.github.anotherjack.avoidonresult;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 
 import java.util.HashMap;
@@ -28,6 +29,24 @@ public class AvoidOnResultFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+    }
+
+    public Observable<ActivityResultInfo> startIntentSenderForResult(
+            final IntentSender intentSender,
+            final Intent fillingIntent,
+            final Integer flagsMask,
+            final Integer flagsValues,
+            final Integer extraFlags
+    ) {
+        final PublishSubject<ActivityResultInfo> subject = PublishSubject.create();
+        return subject.doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable disposable) throws Exception {
+                int requestCode = generateRequestCode();
+                mSubjects.put(requestCode, subject);
+                startIntentSenderForResult(intentSender, fillingIntent, flagsMask, flagsValues, extraFlags);
+            }
+        });
     }
 
     public Observable<ActivityResultInfo> startForResult(final Intent intent) {
@@ -65,11 +84,11 @@ public class AvoidOnResultFragment extends Fragment {
         }
     }
 
-    private int generateRequestCode(){
+    private int generateRequestCode() {
         Random random = new Random();
-        for (;;){
+        for (; ; ) {
             int code = random.nextInt(65536);
-            if (!mSubjects.containsKey(code) && !mCallbacks.containsKey(code)){
+            if (!mSubjects.containsKey(code) && !mCallbacks.containsKey(code)) {
                 return code;
             }
         }
