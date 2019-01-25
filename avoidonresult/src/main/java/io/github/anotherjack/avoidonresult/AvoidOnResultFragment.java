@@ -1,6 +1,5 @@
 package io.github.anotherjack.avoidonresult;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import androidx.fragment.app.Fragment;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -31,12 +31,13 @@ public class AvoidOnResultFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public Observable<ActivityResultInfo> startIntentSenderForResult(
+    public Observable<ActivityResultInfo> startIntentSenderForResultRx(
             final IntentSender intentSender,
             final Intent fillingIntent,
             final Integer flagsMask,
             final Integer flagsValues,
-            final Integer extraFlags
+            final Integer extraFlags,
+            final Bundle options
     ) {
         final PublishSubject<ActivityResultInfo> subject = PublishSubject.create();
         return subject.doOnSubscribe(new Consumer<Disposable>() {
@@ -44,7 +45,7 @@ public class AvoidOnResultFragment extends Fragment {
             public void accept(Disposable disposable) throws Exception {
                 int requestCode = generateRequestCode();
                 mSubjects.put(requestCode, subject);
-                startIntentSenderForResult(intentSender, fillingIntent, flagsMask, flagsValues, extraFlags);
+                startIntentSenderForResult(intentSender, requestCode, fillingIntent, flagsMask, flagsValues, extraFlags, options);
             }
         });
     }
